@@ -12,8 +12,8 @@ export const navLinks: NavLink[] = [
     group: 'main',
   },
   {
-    path: '/dashboard/human-resource',
-    label: 'Nhân Sự',
+    path: '/dashboard/product',
+    label: 'Sản phẩm',
     icon: Users2,
     isActive: false,
     group: 'management',

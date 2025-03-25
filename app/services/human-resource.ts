@@ -1,7 +1,6 @@
 import { instance } from '.';
 import type HumanResource from '../models/features/human-resource';
 import type { HumanResourcePagination } from '../models/features/human-resource';
-import type { ViewMember } from '../models/features/viewMember';
 
 interface FilterParams {
   query?: string;
@@ -98,20 +97,6 @@ export const getHumanResourceById = async (id: string): Promise<HumanResource | 
       return response.data?.data;
     } else {
       return null;
-    }
-  } catch (error: any) {
-    const errorMessage = error.response?.data?.message;
-    throw new Error(errorMessage);
-  }
-};
-
-export const getAllHumanResourceStatisticByYear = async (year: number): Promise<ViewMember[]> => {
-  try {
-    const response = await instance.get(`member/statistic/${year}`);
-    if (response.data?.statusCode === 200 && response.data?.data) {
-      return response.data?.data;
-    } else {
-      throw new Error('Failed to fetch view human resource');
     }
   } catch (error: any) {
     const errorMessage = error.response?.data?.message;

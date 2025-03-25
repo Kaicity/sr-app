@@ -10,7 +10,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Edit, EllipsisVertical, EyeIcon, Mail, PhoneCall, PlusCircle, RotateCcwIcon, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type HumanResource from '@/app/models/features/human-resource';
-import { getHumanResource, updateHumanResourceById } from '@/app/api/human-resource';
+import { getHumanResource, updateHumanResourceById } from '@/app/services/human-resource';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { HUMAN_RESOURCE_ROLE_STYLES, HUMAN_RESOURCE_ROLES_LABEL, type HumanResourceRole } from '@/app/enums/human-resource.enum';
 import { cn } from '@/lib/utils';
@@ -20,12 +20,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
-import { Switch } from '@/components/ui/switch';
 import { useRouter } from 'next/navigation';
 
 type btnActions = 'CREATE' | 'UPDATE' | 'SEE' | 'PRINT' | 'NULL';
 
-function HumanResourcePage() {
+function ProductPage() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [roleFilter, setRoleFilter] = useState<string>('');
   const [isShowFilter, setIsShowFilter] = useState<string>('');
@@ -296,4 +295,4 @@ function HumanResourcePage() {
   );
 }
 
-export default HumanResourcePage;
+export default ProductPage;
