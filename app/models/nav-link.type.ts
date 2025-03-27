@@ -4,7 +4,7 @@ export default interface NavLink {
   path: string;
   label: string;
   icon?: React.ElementType;
-  group: "main" | "management" | "statistic" | "general-information";
+  group: 'statistic' | 'order';
   isActive: boolean;
   children?: NavLink[];
 }

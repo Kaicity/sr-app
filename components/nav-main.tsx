@@ -21,9 +21,7 @@ import { usePathname } from 'next/navigation';
 export function NavMain({ items }: { items: NavLink[] }) {
   const pathVariable = usePathname();
 
-  const mainItems = items.filter((item) => item.group === 'main');
-  const managementItems = items.filter((item) => item.group === 'management');
-  const generalInformations = items.filter((item) => item.group === 'general-information');
+  const orderItems = items.filter((item) => item.group === 'order');
   const statisticItems = items.filter((item) => item.group === 'statistic');
 
   const renderItem = (item: NavLink) => (
@@ -83,31 +81,17 @@ export function NavMain({ items }: { items: NavLink[] }) {
 
   return (
     <SidebarGroup>
-      {mainItems.length > 0 && (
+      {orderItems.length > 0 && (
         <>
-          <SidebarGroupLabel className="text-muted-foreground">Tổng quan</SidebarGroupLabel>
-          <SidebarMenu>{mainItems.map(renderItem)}</SidebarMenu>
-        </>
-      )}
-
-      {managementItems.length > 0 && (
-        <>
-          <SidebarGroupLabel className="text-muted-foreground">Thống kê doanh thu</SidebarGroupLabel>
-          <SidebarMenu>{managementItems.map(renderItem)}</SidebarMenu>
+          <SidebarGroupLabel className="text-muted-foreground">Management</SidebarGroupLabel>
+          <SidebarMenu>{orderItems.map(renderItem)}</SidebarMenu>
         </>
       )}
 
       {statisticItems.length > 0 && (
         <>
-          <SidebarGroupLabel className="text-muted-foreground">Thống kê</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Statistic</SidebarGroupLabel>
           <SidebarMenu>{statisticItems.map(renderItem)}</SidebarMenu>
-        </>
-      )}
-
-      {generalInformations.length > 0 && (
-        <>
-          <SidebarGroupLabel className="text-muted-foreground">Tùy chỉnh</SidebarGroupLabel>
-          <SidebarMenu>{generalInformations.map(renderItem)}</SidebarMenu>
         </>
       )}
     </SidebarGroup>
