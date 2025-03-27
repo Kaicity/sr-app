@@ -5,8 +5,6 @@ import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import BreadcrumbNavLink from '../components/dashboard/Breadcrumb';
 import { NavUser } from '@/components/nav-user';
-import ToggleLanguage from '../components/dashboard/ToggleLanguage';
-import NotificationBell from '../components/dashboard/NotificationBell';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (

@@ -1,12 +1,8 @@
-"use client";
+'use client';
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from 'lucide-react';
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -16,39 +12,29 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
-import Link from "next/link";
-import type NavLink from "@/app/models/nav-link.type";
-import clsx from "clsx";
-import { usePathname } from "next/navigation";
+} from '@/components/ui/sidebar';
+import Link from 'next/link';
+import type NavLink from '@/app/models/nav-link.type';
+import clsx from 'clsx';
+import { usePathname } from 'next/navigation';
 
 export function NavMain({ items }: { items: NavLink[] }) {
   const pathVariable = usePathname();
 
-  const mainItems = items.filter((item) => item.group === "main");
-  const managementItems = items.filter((item) => item.group === "management");
-  const generalInformations = items.filter(
-    (item) => item.group === "general-information"
-  );
-  const statisticItems = items.filter((item) => item.group === "statistic");
+  const mainItems = items.filter((item) => item.group === 'main');
+  const managementItems = items.filter((item) => item.group === 'management');
+  const generalInformations = items.filter((item) => item.group === 'general-information');
+  const statisticItems = items.filter((item) => item.group === 'statistic');
 
   const renderItem = (item: NavLink) => (
-    <Collapsible
-      key={item.label}
-      asChild
-      defaultOpen={item.isActive}
-      className="group/collapsible"
-    >
+    <Collapsible key={item.label} asChild defaultOpen={item.isActive} className="group/collapsible">
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           {!item.children || item.children.length === 0 ? (
             <Link href={item.path}>
               <SidebarMenuButton
                 tooltip={item.label}
-                className={clsx(
-                  "hover:bg-primary hover:text-white",
-                  item.path === pathVariable ? "text-white bg-primary" : ""
-                )}
+                className={clsx('hover:bg-primary hover:text-white', item.path === pathVariable ? 'text-white bg-primary' : '')}
               >
                 {item.icon && <item.icon />}
                 <span>{item.label}</span>
@@ -60,10 +46,7 @@ export function NavMain({ items }: { items: NavLink[] }) {
           ) : (
             <SidebarMenuButton
               tooltip={item.label}
-              className={clsx(
-                "hover:bg-primary hover:text-white",
-                item.path === pathVariable ? "text-white bg-primary" : ""
-              )}
+              className={clsx('hover:bg-primary hover:text-white', item.path === pathVariable ? 'text-white bg-primary' : '')}
             >
               {item.icon && <item.icon />}
               <span>{item.label}</span>
@@ -81,10 +64,8 @@ export function NavMain({ items }: { items: NavLink[] }) {
                   <SidebarMenuSubButton
                     asChild
                     className={clsx(
-                      "hover:bg-primary hover:text-white",
-                      subItem.path === pathVariable
-                        ? "text-white bg-primary"
-                        : ""
+                      'hover:bg-primary hover:text-white',
+                      subItem.path === pathVariable ? 'text-white bg-primary' : '',
                     )}
                   >
                     <Link href={subItem.path}>
@@ -104,36 +85,28 @@ export function NavMain({ items }: { items: NavLink[] }) {
     <SidebarGroup>
       {mainItems.length > 0 && (
         <>
-          <SidebarGroupLabel className="text-muted-foreground">
-            Tổng quan
-          </SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Tổng quan</SidebarGroupLabel>
           <SidebarMenu>{mainItems.map(renderItem)}</SidebarMenu>
         </>
       )}
 
       {managementItems.length > 0 && (
         <>
-          <SidebarGroupLabel className="text-muted-foreground">
-            Quản lý
-          </SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Thống kê doanh thu</SidebarGroupLabel>
           <SidebarMenu>{managementItems.map(renderItem)}</SidebarMenu>
         </>
       )}
 
       {statisticItems.length > 0 && (
         <>
-          <SidebarGroupLabel className="text-muted-foreground">
-            Thống kê
-          </SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Thống kê</SidebarGroupLabel>
           <SidebarMenu>{statisticItems.map(renderItem)}</SidebarMenu>
         </>
       )}
 
       {generalInformations.length > 0 && (
         <>
-          <SidebarGroupLabel className="text-muted-foreground">
-            Tùy chỉnh
-          </SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Tùy chỉnh</SidebarGroupLabel>
           <SidebarMenu>{generalInformations.map(renderItem)}</SidebarMenu>
         </>
       )}

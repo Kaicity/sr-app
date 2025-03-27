@@ -19,11 +19,11 @@ export function TeamSwitcher() {
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
-          <Image width={50} height={50} src="/logo.jpg" alt="" className="w-[40px] h-auto" />
+          <Image width={50} height={50} src="/favicon.ico" alt="" className="w-[40px] h-auto" />
 
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{'ILC'}</span>
-            <span className="truncate text-xs">{'Platform'}</span>
+            <span className="truncate font-semibold">{'SR'}</span>
+            <span className="truncate text-xs">{'App'}</span>
           </div>
         </SidebarMenuButton>
       </SidebarMenuItem>

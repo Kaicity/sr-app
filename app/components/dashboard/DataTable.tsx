@@ -1,29 +1,15 @@
 import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Ban } from 'lucide-react';
+import { Ban, Loader2 } from 'lucide-react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  page: number;
-  total: number;
-  limit: number;
-  onPageChange: (page: number) => void;
-  onLimitChange: (limit: number) => void;
+  isLoading: boolean;
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-  page,
-  total,
-  limit,
-  onPageChange,
-  onLimitChange,
-}: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, isLoading }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
@@ -31,8 +17,6 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
   });
-
-  const totalPages = Math.ceil(total / limit);
 
   return (
     <>
@@ -51,7 +35,16 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground text-md font-semibold">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <p>Đang tải dữ liệu...</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
@@ -72,43 +65,6 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-
-      {page !== 0 && total !== 0 && limit !== 0 && (
-        <div className="flex flex-wrap items-center justify-between py-4">
-          <div className="text-sm text-muted-foreground">
-            Trang {page} / {totalPages}
-          </div>
-
-          <div className="flex space-x-2">
-            <Select value={limit.toString()} onValueChange={(value) => onLimitChange(Number(value))}>
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={limit.toString()} />
-              </SelectTrigger>
-              <SelectContent>
-                {[10, 20, 30, 40, 50].map((size) => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Button variant="outline" size="sm" onClick={() => onPageChange(page - 1)} disabled={page <= 1}>
-              Trước
-            </Button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
-              <Button key={num} variant={page === num ? 'default' : 'outline'} size="sm" onClick={() => onPageChange(num)}>
-                {num}
-              </Button>
-            ))}
-
-            <Button variant="outline" size="sm" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages}>
-              Trang kế
-            </Button>
-          </div>
-        </div>
-      )}
     </>
   );
 }

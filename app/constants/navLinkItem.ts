@@ -1,20 +1,20 @@
-import { Home, Users2 } from 'lucide-react';
+import { Box, Home, Users2 } from 'lucide-react';
 import type NavLink from '../models/nav-link.type';
 
 // Dữ liệu navLinks
 export const navLinks: NavLink[] = [
   {
     path: '/dashboard',
-    label: 'Trang Chủ',
+    label: 'Dashboard',
     icon: Home,
     isActive: false,
     children: [],
     group: 'main',
   },
   {
-    path: '/dashboard/product',
-    label: 'Sản phẩm',
-    icon: Users2,
+    path: '/dashboard/statistic-report',
+    label: 'Báo Cáo Thống Kê',
+    icon: Box,
     isActive: false,
     group: 'management',
     children: [],
