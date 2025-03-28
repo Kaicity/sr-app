@@ -1,32 +1,34 @@
-import sql from 'mssql';
+import sql, { ConnectionPool } from 'mssql'; // Import sql and ConnectionPool from 'mssql'
 
-const dbConfig = {
-  server: process.env.NEXT_PUBLIC_DB_SERVER as string,
-  database: process.env.NEXT_PUBLIC_DB_DATABASE as string,
-  user: process.env.NEXT_PUBLIC_DB_USER as string,
-  password: process.env.NEXT_PUBLIC_DB_PASSWORD as string,
-  port: parseInt(process.env.NEXT_PUBLIC_DB_PORT || '1433', 10),
+// Define the configuration object with appropriate types
+const sqlConfig = {
+  user: 'sa', // Type assertion to string
+  password: '123',
+  database: 'AdventureWorks2022',
+  server: 'DESKTOP-T1J8PD9\\MSSQLSERVER01',
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 300000,
+  },
   options: {
-    encrypt: process.env.NEXT_PUBLIC_DB_ENCRYPT === 'true', // Bắt buộc khi kết nối Azure
-    trustServerCertificate: true, // Nếu dùng localhost, cần bật
+    encrypt: false,
+    trustServerCertificate: true,
   },
 };
 
-let pool: sql.ConnectionPool | null = null;
-
-export async function getDbPool() {
-  if (!dbConfig.server) {
-    throw new Error('Database config "server" is required and must be a string.');
+// Asynchronous function to establish the connection and return a pool
+export async function getDbPool(): Promise<ConnectionPool> {
+  try {
+    // Establish connection with the database using sqlConfig
+    const conn = process.env.CONN as string;
+    const pool = await sql.connect(conn); // Returns a connection pool
+    console.log('Connected to SQL Server');
+    return pool; // Return the connection pool
+  } catch (err) {
+    console.error('Database connection error:', err); // Log connection error
+    throw err; // Rethrow the error for further handling
   }
-
-  if (!pool) {
-    try {
-      pool = await sql.connect(dbConfig);
-      console.log('Connected to SQL Server');
-    } catch (err) {
-      console.error('Database connection error:', err);
-      throw err;
-    }
-  }
-  return pool;
 }
+
+export default getDbPool;

@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import type { Product } from '@/app/models/features/product';
-import { getTopProducts } from '@/app/services/product';
+import { getTotalSalesYear } from '@/app/services/product';
 import { generateYearChart } from '@/app/utils/generateYear';
 import TYPE_REPORT_OPTIONS from '@/app/constants/typeReportOptions';
 import { fakeOrders } from './fakeData';
