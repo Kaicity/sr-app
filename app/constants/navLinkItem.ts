@@ -12,7 +12,7 @@ export const navLinks: NavLink[] = [
     children: [],
   },
   {
-    path: '/dashboard/statistic-report',
+    path: '/dashboard/total-sales-by-year',
     label: 'Top 10 Sản Phẩm Có Doanh Thu Cao Nhất',
     icon: Box,
     isActive: false,
@@ -20,7 +20,7 @@ export const navLinks: NavLink[] = [
     children: [],
   },
   {
-    path: '/dashboard/statistic-report',
+    path: '/dashboard/total-sales-by-subcategory',
     label: 'Tổng Doanh Thu Trong Năm',
     icon: Box,
     isActive: false,
@@ -28,7 +28,7 @@ export const navLinks: NavLink[] = [
     children: [],
   },
   {
-    path: '/dashboard/statistic-report',
+    path: '/dashboard/top-products-by-revenue',
     label: 'Doanh Thu Theo Thành Phố Và Danh Mục',
     icon: Box,
     isActive: false,

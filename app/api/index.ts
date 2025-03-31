@@ -7,15 +7,9 @@ export const instance = axios.create({
   },
 });
 
-// Interceptor để gắn token vào header
-instance.interceptors.request.use(
-  (config) => {
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+instance.interceptors.request.use((error) => {
+  return Promise.reject(error);
+});
 
 // Thêm interceptor xử lý các lỗi
 instance.interceptors.response.use(
