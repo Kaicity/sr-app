@@ -6,17 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Loader2, RotateCcwIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { generateYearChart } from '@/app/utils/generateYear';
 import TYPE_REPORT_OPTIONS from '@/app/constants/typeReportOptions';
-import { mockDataSaleByCityAndCategory, mockDataSalesPercentage, mockDataTopProductByRevenue } from './fakeData';
-import { Label } from '@/components/ui/label';
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { chartDataSaleByCityAndCategory } from './fakeChartData';
-import { getTotalSalesYear } from '@/app/services/product';
 import { toast } from 'sonner';
+import { chartDataSaleByCityAndCategory } from '@/app/data/fakeChartData';
+import { mockDataSaleByCityAndCategory, mockDataSalesPercentage, mockDataTopProductByRevenue } from '@/app/data/fakeData';
 
 function ProductPage() {
   const [typeReport, setTypeReport] = useState<string>('');
@@ -28,18 +25,6 @@ function ProductPage() {
   const [cpuTime, setCpuTime] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchSaleByCityAndCategory = async () => {
-      try {
-        const data = await getTotalSalesYear(2022);
-      } catch (error: any) {
-        toast.error(error);
-      }
-    };
-
-    fetchSaleByCityAndCategory();
-  }, []);
-
   const handleRunReport = () => {
     setIsLoading(true);
     const startCpuTime = performance.now();
@@ -50,10 +35,6 @@ function ProductPage() {
         case 'yearly-sales-by-city-and-category':
           setDatas(mockDataSaleByCityAndCategory);
           setChartDatas(chartDataSaleByCityAndCategory);
-          break;
-
-        case 'total-sales-year':
-          setDatas(mockDataSaleByCityAndCategory);
           break;
 
         case 'top-products-by-revenue':
@@ -149,7 +130,7 @@ function ProductPage() {
 
   return (
     <div className="">
-      <HeaderContent title="Report Statistic Sales" subTitle="Report cost product sale by year" />
+      <HeaderContent title="Báo cáo thống kê sản phẩm" subTitle="Báo cáo thống kê sản phẩm hằng năm" />
 
       <div className="flex items-center gap-2 py-3 justify-end">
         <Select
@@ -162,7 +143,7 @@ function ProductPage() {
           }}
         >
           <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder="Select report type" />
+            <SelectValue placeholder="Chọn báo cáo" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -196,7 +177,7 @@ function ProductPage() {
             }}
           >
             <SelectTrigger className="w-full md:w-[180px]">
-              <SelectValue placeholder="filter year" />
+              <SelectValue placeholder="Chọn năm" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -216,7 +197,7 @@ function ProductPage() {
             }}
           >
             <SelectTrigger className="w-full md:w-[180px]">
-              <SelectValue placeholder="Filter location" />
+              <SelectValue placeholder="Chọn vị trí" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -248,7 +229,7 @@ function ProductPage() {
 
         <Separator className="mt-3 mb-6 text-muted-foreground" />
 
-        {/* {typeReport === 'yearly-sales-by-city-and-category' && (
+        {typeReport === 'yearly-sales-by-city-and-category' && (
           <DataTable isLoading={isLoading} columns={columnSaleByCityAndCategorys} data={datas} />
         )}
 
@@ -258,40 +239,7 @@ function ProductPage() {
 
         {typeReport === 'sales-percentage-by-year' && (
           <DataTable isLoading={isLoading} columns={columnSalesPercentages} data={datas} />
-        )} */}
-
-        {/* Biểu đồ */}
-        {typeReport === 'yearly-sales-by-city-and-category' && chartDatas.length > 0 ? (
-          <div className="flex-1 h-[500px] flex flex-col items-center justify-center border border-gray-300 rounded-lg">
-            <h3 className="text-lg text-primary font-semibold text-center mt-3">{'Biểu đồ thống kê'}</h3>
-            <Label className="text-muted-foreground text-sm flex justify-center">
-              {'('}Biểu diễn biểu đồ theo doanh thu sản phẩm theo thành phố{')'}
-            </Label>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                width={500}
-                height={300}
-                data={chartDatas}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="city" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="Bikes" stackId="a" fill="#82ca9d" />
-                <Bar dataKey="Clothing" stackId="a" fill="#ffc658" />
-                <Bar dataKey="Components" stackId="a" fill="#ff8042" />
-                <Bar dataKey="Accessories" stackId="a" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        ) : null}
+        )}
       </Card>
     </div>
   );

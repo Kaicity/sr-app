@@ -1,15 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
+
 import sql from 'mssql';
-import { getDbPool } from '@/app/db/db';
+import { connectToDB } from '@/app/db/db';
+import { configDb2 } from '@/app/db/config';
 
-export async function GET(req: Request) {
+export async function getTopProducts(year?: string | null) {
   try {
-    const url = new URL(req.url);
-    const year = url.searchParams.get('year');
+    const pool = await connectToDB(configDb2);
 
-    const pool = await getDbPool();
-
-    // Truy vấn top 10 sản phẩm có doanh thu cao nhất
     let query = `
       SELECT TOP 10 
         p.Name AS ProductName,
@@ -27,11 +25,12 @@ export async function GET(req: Request) {
       .input('year', sql.Int, year ? parseInt(year) : null)
       .query(query);
 
-    return NextResponse.json({
+    return {
       Year: year,
       TopProducts: result.recordset,
-    });
+    };
   } catch (error: any) {
-    return NextResponse.json({ error: 'Lỗi truy vấn dữ liệu', details: error.message }, { status: 500 });
+    console.error('Lỗi truy vấn dữ liệu:', error);
+    throw new Error('Lỗi truy vấn dữ liệu');
   }
 }

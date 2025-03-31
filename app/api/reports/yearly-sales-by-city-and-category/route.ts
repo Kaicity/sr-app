@@ -1,13 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
+
 import sql from 'mssql';
-import { getDbPool } from '@/app/db/db';
+import { connectToDB } from '@/app/db/db';
+import { configDb2 } from '@/app/db/config';
 
-export async function GET(req: Request) {
+export async function getSalesByCityCategory(year?: string | null) {
   try {
-    const url = new URL(req.url);
-    const year = url.searchParams.get('year');
-
-    const pool = await getDbPool();
+    const pool = await connectToDB(configDb2);
 
     // Truy vấn doanh thu theo thành phố và danh mục
     let query = `
@@ -42,11 +41,12 @@ export async function GET(req: Request) {
       .input('year', sql.Int, year ? parseInt(year) : null)
       .query(query);
 
-    return NextResponse.json({
+    return {
       Year: year,
       SalesData: result.recordset,
-    });
+    };
   } catch (error: any) {
-    return NextResponse.json({ error: 'Lỗi truy vấn dữ liệu', details: error.message }, { status: 500 });
+    console.error('Lỗi truy vấn dữ liệu:', error);
+    throw new Error('Lỗi truy vấn dữ liệu');
   }
 }

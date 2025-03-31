@@ -1,25 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
 
 import sql from 'mssql';
-import { getDbPool } from '@/app/db/db';
+import { connectToDB } from '@/app/db/db';
+import { configDb1, configDb2, configDb3 } from '@/app/db/config';
 
-export async function GET(req: Request) {
+export async function getSalesData(year?: string | null) {
   try {
-    const url = new URL(req.url);
-    const year = url.searchParams.get('year');
+    const poolsv2 = await connectToDB(configDb2);
 
-    const pool = await getDbPool();
+    const poolsv1 = await connectToDB(configDb1);
 
     // Tính tổng doanh số theo năm hoặc tổng tất cả nếu year = null
     let totalSalesQuery = `
       SELECT SUM(TotalDue) AS TotalSales
-      FROM SalesOrderHeader
+      FROM [SalesNA].[Sales].[SalesOrderHeader]
       ${year ? 'WHERE YEAR(OrderDate) = @year' : ''}
     `;
-    const totalSalesResult = await pool
+
+    const totalSalesResult = await poolsv2
       .request()
       .input('year', sql.Int, year ? parseInt(year) : null)
       .query(totalSalesQuery);
+
     const totalSales = totalSalesResult.recordset[0]?.TotalSales || 0;
 
     // Tính phần trăm doanh số theo danh mục
@@ -40,17 +42,18 @@ export async function GET(req: Request) {
       ORDER BY pc.Name;
     `;
 
-    const salesResult = await pool
+    const salesResult = await poolsv2
       .request()
       .input('year', sql.Int, year ? parseInt(year) : null)
       .input('totalSales', sql.Float, totalSales)
       .query(salesQuery);
 
-    return NextResponse.json({
+    return {
       Year: year,
       Data: salesResult.recordset,
-    });
+    };
   } catch (error: any) {
-    return NextResponse.json({ error: 'Lỗi truy vấn dữ liệu', details: error.message }, { status: 500 });
+    console.error('Lỗi truy vấn dữ liệu:', error);
+    throw new Error('Lỗi truy vấn dữ liệu');
   }
 }

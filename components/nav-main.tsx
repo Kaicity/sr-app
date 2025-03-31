@@ -83,14 +83,14 @@ export function NavMain({ items }: { items: NavLink[] }) {
     <SidebarGroup>
       {orderItems.length > 0 && (
         <>
-          <SidebarGroupLabel className="text-muted-foreground">Management</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Quản Lý</SidebarGroupLabel>
           <SidebarMenu>{orderItems.map(renderItem)}</SidebarMenu>
         </>
       )}
 
       {statisticItems.length > 0 && (
         <>
-          <SidebarGroupLabel className="text-muted-foreground">Statistic</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Báo Cáo Thống Kê</SidebarGroupLabel>
           <SidebarMenu>{statisticItems.map(renderItem)}</SidebarMenu>
         </>
       )}

@@ -1,15 +1,13 @@
-import { getDbPool } from '@/app/db/db';
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
+
 import sql from 'mssql';
+import { configDb2 } from '@/app/db/config';
+import { connectToDB } from '@/app/db/db';
 
-export async function GET(req: Request) {
+export async function getTotalSales(year?: string | null) {
   try {
-    const url = new URL(req.url);
-    const year = url.searchParams.get('year');
+    const pool = await connectToDB(configDb2);
 
-    const pool = await getDbPool();
-
-    // Truy vấn tổng doanh thu trong năm
     let query = `
       SELECT SUM(TotalDue) AS TotalSales
       FROM SalesOrderHeader
@@ -21,11 +19,12 @@ export async function GET(req: Request) {
       .input('year', sql.Int, year ? parseInt(year) : null)
       .query(query);
 
-    return NextResponse.json({
+    return {
       Year: year,
-      TotalSales: result.recordset[0].TotalSales || 0,
-    });
+      TotalSales: result.recordset[0]?.TotalSales || 0,
+    };
   } catch (error: any) {
-    return NextResponse.json({ error: 'Lỗi truy vấn dữ liệu', details: error.message }, { status: 500 });
+    console.error('Lỗi truy vấn dữ liệu:', error);
+    throw new Error('Lỗi truy vấn dữ liệu');
   }
 }
