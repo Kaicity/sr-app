@@ -14,27 +14,19 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import type { SalesOrder } from '@/app/models/order';
 import { useRouter } from 'next/navigation';
-import OrderStatusDialog from '@/app/components/order/modal';
 
 function OrderPage() {
   const router = useRouter();
 
   const [yearFilter, setYearFilter] = useState<string>('2011');
-  const [locationFilter, setLocationFilter] = useState<string>('NA');
+  const [locationFilter, setLocationFilter] = useState<string>('na');
   const [orders, setOrders] = useState<SalesOrder[]>([]);
   const [executionTime, setExecutionTime] = useState<number | null>(null);
   const [cpuTime, setCpuTime] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<'ms' | 'na' | 'eu' | null>(null);
-
-  const handleOpenDialog = (orderId: number, location: 'ms' | 'na' | 'eu') => {
-    setSelectedOrderId(orderId);
-    setSelectedLocation(location);
-    setIsDialogOpen(true);
-  };
+  const [selectedOrder, setSelectedOrder] = useState<SalesOrder | null>(null);
+  const [newStatus, setNewStatus] = useState<number | null>(null);
 
   const getOrderStatusLabel = (status: number) => {
     switch (status) {
@@ -55,28 +47,43 @@ function OrderPage() {
     }
   };
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(`http://localhost:8080/api/order/${locationFilter}`, {
-          params: { year: yearFilter },
-        });
+  const fetchOrders = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:8080/api/order/${locationFilter}`, {
+        params: { year: yearFilter },
+      });
 
-        console.log(response);
+      console.log(response);
 
-        const { CPUTime, ElapsedTime, Orders } = response.data;
+      const { CPUTime, ElapsedTime, Orders } = response.data;
 
-        setOrders(Orders || []); // Đảm bảo luôn có dữ liệu mảng
-        setCpuTime(CPUTime);
-        setExecutionTime(ElapsedTime);
-      } catch (error: any) {
-        toast.error(error.message || 'Lỗi thao tác dữ liệu');
-      } finally {
-        setIsLoading(false);
+      setOrders(Orders || []); // Đảm bảo luôn có dữ liệu mảng
+      setCpuTime(CPUTime);
+      setExecutionTime(ElapsedTime);
+    } catch (error: any) {
+      toast.error(error.message || 'Lỗi thao tác dữ liệu');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateStatus = async (orderId: number, newStatus: number) => {
+    try {
+      const response = await axios.put(`http://localhost:8080/api/order/${locationFilter}/${orderId}`, {
+        status: newStatus,
+      });
+
+      if (response.status === 200) {
+        toast.success('Cập nhật trạng thái thành công!');
+        fetchOrders();
       }
-    };
+    } catch (error: any) {
+      toast.error(error.message || 'Lỗi khi cập nhật trạng thái đơn hàng');
+    }
+  };
 
+  useEffect(() => {
     if (yearFilter && locationFilter) {
       fetchOrders();
     }
@@ -111,15 +118,37 @@ function OrderPage() {
     },
     {
       accessorKey: 'ACTION',
+      header: 'Action',
+      cell: ({ row }) => {
+        const order = row.original;
 
-      cell: ({ row }) => (
-        <button
-          onClick={() => router.push(`/dashboard/order-detail/${row.original.SalesOrderID}`)}
-          className="text-blue-600 hover:underline"
-        >
-          <Eye />
-        </button>
-      ),
+        return (
+          <div className="flex gap-2">
+            <button
+              onClick={() => router.push(`/dashboard/order-detail/${order.SalesOrderID}`)}
+              className="text-blue-600 hover:underline"
+            >
+              <Eye />
+            </button>
+
+            <Select value={String(order.Status)} onValueChange={(value) => handleUpdateStatus(order.SalesOrderID, Number(value))}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Update Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="1">In Process</SelectItem>
+                  <SelectItem value="2">Approved</SelectItem>
+                  <SelectItem value="3">Backordered</SelectItem>
+                  <SelectItem value="4">Rejected</SelectItem>
+                  <SelectItem value="5">Shipped</SelectItem>
+                  <SelectItem value="6">Cancelled</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      },
     },
   ];
 
@@ -151,21 +180,11 @@ function OrderPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="NA">NA</SelectItem>
-                <SelectItem value="EU">EU</SelectItem>
+                <SelectItem value="na">NA</SelectItem>
+                <SelectItem value="eu">EU</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
-
-          <Button
-            variant="outline"
-            onClick={() => {
-              setYearFilter('2011');
-              setLocationFilter('NA');
-            }}
-          >
-            <RotateCcwIcon className="w-6 h-6" />
-          </Button>
 
           <div className="text-gray-600 ml-auto">
             {cpuTime !== null && executionTime !== null && (
@@ -179,19 +198,8 @@ function OrderPage() {
 
         <Separator className="mt-3 mb-6 text-muted-foreground" />
 
-        <Button onClick={() => setIsDialogOpen(true)}>Tạo</Button>
-
         <DataTable isLoading={isLoading} columns={columnOrders} data={orders} />
       </Card>
-
-      {isDialogOpen && (
-        <OrderStatusDialog
-          open={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
-          orderId={selectedOrderId!}
-          location={selectedLocation!}
-        />
-      )}
     </div>
   );
 }
