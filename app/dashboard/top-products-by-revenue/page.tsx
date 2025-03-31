@@ -99,16 +99,6 @@ function TopProductRevenuePage() {
             </Select>
           </div>
 
-          <Button
-            variant="outline"
-            onClick={() => {
-              setYearFilter('2011');
-              setLocationFilter('na');
-            }}
-          >
-            <RotateCcwIcon className="w-6 h-6" />
-          </Button>
-
           <div className="text-gray-600 ml-auto">
             {cpuTime !== null && executionTime !== null && (
               <p className="text-md">

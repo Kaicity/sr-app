@@ -9,6 +9,11 @@ export interface SubcategorySales {
   SalesPercentage: number;
 }
 
+export interface ToTalSalesByYear {
+  Year: string;
+  TotalSales: number;
+}
+
 export interface SaleProductPercent {
   Category: string;
   TotalSales: number;

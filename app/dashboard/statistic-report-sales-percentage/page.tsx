@@ -34,10 +34,12 @@ function TopProductRevenuePage() {
           },
         });
 
-        console.log(response);
-
         const { CPUTime, ElapsedTime } = response.data;
+
+        console.log(response?.data);
+
         setDatas(response?.data?.Data);
+
         setCpuTime(CPUTime);
         setExecutionTime(ElapsedTime);
       } catch (error: any) {
@@ -101,16 +103,6 @@ function TopProductRevenuePage() {
               </SelectContent>
             </Select>
           </div>
-
-          <Button
-            variant="outline"
-            onClick={() => {
-              setYearFilter('2011');
-              setLocationFilter('na');
-            }}
-          >
-            <RotateCcwIcon className="w-6 h-6" />
-          </Button>
 
           <div className="text-gray-600 ml-auto">
             {cpuTime !== null && executionTime !== null && (

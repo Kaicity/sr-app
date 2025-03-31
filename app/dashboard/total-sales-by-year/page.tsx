@@ -4,17 +4,18 @@ import HeaderContent from '@/app/components/dashboard/HeaderContent';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RotateCcwIcon } from 'lucide-react';
+import { LineChart } from 'recharts';
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { generateYearChart } from '@/app/utils/generateYear';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { Label } from '@/components/ui/label';
+import type { ToTalSalesByYear } from '@/app/models/report';
+import { CartesianGrid, Legend, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 function SaleProductByYearPage() {
-  const [yearFilter, setYearFilter] = useState<string>('2011');
   const [locationFilter, setLocationFilter] = useState<string>('na');
-  const [datas, setDatas] = useState<number>();
+  const [datas, setDatas] = useState<ToTalSalesByYear[]>([]);
   const [executionTime, setExecutionTime] = useState<number | null>(null);
   const [cpuTime, setCpuTime] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -23,17 +24,13 @@ function SaleProductByYearPage() {
     const fetchTopProductRevenue = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`http://localhost:8080/api/report/${locationFilter}/total-sales-by-year`, {
-          params: {
-            year: yearFilter,
-          },
-        });
+        const response = await axios.get(`http://localhost:8080/api/report/${locationFilter}/total-sales-by-year`, {});
 
         console.log(response);
 
         const { CPUTime, ElapsedTime } = response.data;
 
-        setDatas(response.data?.TotalSales);
+        setDatas(response.data?.Data);
 
         console.log(datas);
 
@@ -46,10 +43,10 @@ function SaleProductByYearPage() {
       }
     };
 
-    if (yearFilter && locationFilter) {
+    if (locationFilter) {
       fetchTopProductRevenue();
     }
-  }, [yearFilter, locationFilter]);
+  }, [locationFilter]);
 
   return (
     <div className="">
@@ -57,29 +54,6 @@ function SaleProductByYearPage() {
 
       <Card className="px-4 py-2 shadow-md">
         <div className="flex flex-wrap items-center gap-2 py-4">
-          <div className="flex flex-col gap-2">
-            <Label>Năm</Label>
-            <Select
-              value={yearFilter}
-              onValueChange={(value) => {
-                setYearFilter(value);
-              }}
-            >
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Chọn năm" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {generateYearChart().map((year) => (
-                    <SelectItem key={year} value={year}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
           <div className="flex flex-col gap-2">
             <Label>Khu vực</Label>
             <Select
@@ -101,16 +75,6 @@ function SaleProductByYearPage() {
             </Select>
           </div>
 
-          <Button
-            variant="outline"
-            onClick={() => {
-              setYearFilter('2011');
-              setLocationFilter('na');
-            }}
-          >
-            <RotateCcwIcon className="w-6 h-6" />
-          </Button>
-
           <div className="text-gray-600 ml-auto">
             {cpuTime !== null && executionTime !== null && (
               <p className="text-md">
@@ -126,13 +90,16 @@ function SaleProductByYearPage() {
           {isLoading ? (
             <p className="text-center text-gray-500">Đang tải dữ liệu...</p>
           ) : (
-            <Card className="p-6 shadow-md text-center w-full">
-              <h2 className="text-xl font-semibold text-gray-700">Tổng doanh số</h2>
-              <p className="text-3xl font-bold text-primary">{datas?.toLocaleString()} VND</p>
-              <p className="text-sm text-gray-500 mt-2">
-                CPU time: {cpuTime} ms | Elapsed time: {executionTime} ms
-              </p>
-            </Card>
+            <ResponsiveContainer width="100%" height={400} className={'p-2'}>
+              <LineChart data={datas}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="Year" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="TotalSales" stroke="#34d399" strokeWidth={2} name="Tổng doanh số" />
+              </LineChart>
+            </ResponsiveContainer>
           )}
         </div>
       </Card>
